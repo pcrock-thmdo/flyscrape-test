@@ -33,8 +33,10 @@ export default function ({ doc, url, absoluteURL, scrape, follow }) {
     const rows = table.find("tr")
         .map(row => {
             return {
-                description: row.find(".role-description").text(),
-                permissions: row.find(".role-permissions").text()
+                title: row.find("td.role-description > .role-title").text().trim(),
+                id: row.find("td.role-description > .iamperm-marginless").text().trim(),
+                description: row.find("td.role-description > span.role-description > p").text().trim(),
+                permissions: row.find("td.role-permissions code").map(x => x.text())
             };
         })
         .filter(row => row.description.length > 0 && row.permissions.length > 0);
