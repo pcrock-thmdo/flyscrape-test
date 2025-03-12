@@ -13,7 +13,8 @@ export default function ({ doc }) {
                     .replace(/\nBeta$/g, ""),  // delete "Beta" at end. is_beta below will handle that for us
                 id: row.find("td.role-description > .iamperm-marginless").text().trim()
                     .replace(/^\(|\)$/g, ""),  // delete parens at begin and end of text
-                description: row.find("td.role-description > span.role-description > p").text().trim(),
+                description: row.find("td.role-description > span.role-description > p").text().trim()
+                    .replace(/\n/g, " "),
                 permissions: row.find("td.role-permissions code").map(x => x.text()),
                 is_beta: row.find("td.role-description .launch-stage-pre-ga").text().trim() != ""
             };
