@@ -15,7 +15,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - run: make ci
-    - run: |
+    - name: check for changes
+      run: |
         # running CI always makes a change to `roles.json`. the timestamp at the end
         # always changes. we don't need a new PR just for timestamp changes, so we check
         # the git diff, and if there's more than 1 insertion and deletion, then we set
@@ -24,11 +25,10 @@ jobs:
           git diff --numstat roles.json \
           | awk '$1 != "1" || $2 != "1" { print "true" }'
         )"
-        echo "${ROLE_CHANGE}"  # just a test
-        # if [ "${ROLE_CHANGE}" != "true" ]; then
-        #   # revert timestamp change so the next action doesn't create a PR
-        #   git checkout roles.json
-        # fi
+        if [ "${ROLE_CHANGE}" != "true" ]; then
+          # revert timestamp change so the next action doesn't create a PR
+          git checkout roles.json
+        fi
     - uses: peter-evans/create-pull-request@v7
       with:
         title: "GCP role update"
