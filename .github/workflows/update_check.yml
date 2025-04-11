@@ -36,3 +36,4 @@ jobs:
         branch: "gcp-role-update"
         reviewers: pcrock-thmdo
         assignees: pcrock-thmdo
+        draft: always-true
