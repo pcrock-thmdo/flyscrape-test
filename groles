@@ -54,7 +54,7 @@ get_roles \
 | glow --width \"\$((FZF_PREVIEW_COLUMNS-2))\"
 "
 
-    get_headings | SHELL="sh" fzf --ansi --preview "${preview_cmd}"
+    get_headings | SHELL="sh" fzf --ansi --preview "${preview_cmd}" --preview-window up,75% --layout reverse
 }
 
 main() {
