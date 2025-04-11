@@ -34,7 +34,7 @@ map(
         "",
         "Permissions:",
         "",
-        (.permissions | map("* " + .) | join("\n"))
+        (.permissions | map("* \`" + . + "\`") | join("\n"))
     ] | join("\n")
 )
 | join("\n")
@@ -51,11 +51,7 @@ $(declare -f get_roles)
 $(declare -f get_details)
 get_roles \
 | get_details {} \
-| bat --language markdown \
-  --terminal-width \"\${FZF_PREVIEW_COLUMNS}\" \
-  --wrap character \
-  --color always \
-  --paging never
+| glow --width \"\$((FZF_PREVIEW_COLUMNS-2))\"
 "
 
     get_headings | SHELL="sh" fzf --ansi --preview "${preview_cmd}"
