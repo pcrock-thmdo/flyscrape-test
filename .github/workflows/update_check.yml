@@ -1,0 +1,38 @@
+name: Check for role updates
+
+on:
+  schedule:
+    - cron: "17 3 * * 1"  # every Monday at 03:17 UTC   https://crontab.guru/#17_3_*_*_1
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - run: make ci
+    - run: |
+        # running CI always makes a change to `roles.json`. the timestamp at the end
+        # always changes. we don't need a new PR just for timestamp changes, so we check
+        # the git diff, and if there's more than 1 insertion and deletion, then we set
+        # the ROLE_CHANGE env variable to "true"
+        ROLE_CHANGE="$(
+          git diff --numstat roles.json \
+          | awk '$1 != "1" || $2 != "1" { print "true" }'
+        )"
+        echo "${ROLE_CHANGE}"  # just a test
+        # if [ "${ROLE_CHANGE}" != "true" ]; then
+        #   # revert timestamp change so the next action doesn't create a PR
+        #   git checkout roles.json
+        # fi
+    - uses: peter-evans/create-pull-request@v7
+      with:
+        title: "GCP role update"
+        commit-message: "GCP role update"
+        branch: "gcp-role-update"
+        reviewers: pcrock-thmdo
+        assignees: pcrock-thmdo
