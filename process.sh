@@ -24,12 +24,17 @@ map(
 )
 | map(
     [
-        "Title: " + .title,
-        "ID: " + .id,
-        "Description: " + .description,
-        "Beta: " + (.is_beta | tostring),
+        "# " + .title,
+        "",
+        "\`" + .id + "\`",
+        "",
+        "> " + .description,
+        "",
+        "Beta: \`" + (.is_beta | tostring) + "\`",
+        "",
         "Permissions:",
-        (.permissions | map("  * " + .) | join("\n"))
+        "",
+        (.permissions | map("* " + .) | join("\n"))
     ] | join("\n")
 )
 | join("\n")
@@ -44,9 +49,16 @@ select_role() {
 INPUT_FILE=${INPUT_FILE}
 $(declare -f get_roles)
 $(declare -f get_details)
-get_roles | get_details {}"
+get_roles \
+| get_details {} \
+| bat --language markdown \
+  --terminal-width \"\${FZF_PREVIEW_COLUMNS}\" \
+  --wrap character \
+  --color always \
+  --paging never
+"
 
-    get_headings | SHELL="sh" fzf --preview "${preview_cmd}"
+    get_headings | SHELL="sh" fzf --ansi --preview "${preview_cmd}"
 }
 
 main() {
