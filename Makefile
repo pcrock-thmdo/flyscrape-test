@@ -15,5 +15,14 @@ ci:
 	docker container rm --force "$(CONTAINER)"
 .PHONY: ci
 
+release:
+	gh release create \
+		--generate-notes \
+		--fail-on-no-commits \
+		--target "$(shell git rev-parse --abbrev-ref HEAD)"
+	gh release upload "$(shell gh release list --limit 1 --exclude-drafts --exclude-prereleases --json tagName --template '{{range .}}{{.tagName}}{{end}}')" \
+		groles roles.json
+.PHONY: release
+
 roles.json: understanding-roles.js
 	flyscrape run ./understanding-roles.js > roles.json
