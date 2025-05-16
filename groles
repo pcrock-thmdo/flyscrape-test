@@ -32,7 +32,8 @@ update_roles_json() {
     echo "Updating roles data..." >&2
     local latest_tag
     latest_tag="$(github_latest_tag "${GROLES_REPO}")"
-    curl_download "https://github.com/${GROLES_REPO}/releases/download/${latest_tag}/roles.json" \
+    curl_download "https://github.com/${GROLES_REPO}/releases/download/${latest_tag}/roles.json.gz" \
+        | gunzip - \
         > "${ROLES_JSON}"
 }
 
