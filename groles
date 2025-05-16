@@ -3,10 +3,10 @@ set -Eeuo pipefail
 
 init() {
     export BAT_THEME="${BAT_THEME:-ansi}"
-    export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}/.config"}"
-    GROLES_CONFIG_HOME="${GROLES_CONFIG_HOME:-"${XDG_CONFIG_HOME}/groles"}"
-    mkdir -p "${GROLES_CONFIG_HOME}"
-    ROLES_JSON="${GROLES_CONFIG_HOME}/roles.json"
+    export XDG_DATA_HOME="${XDG_DATA_HOME:-"${HOME}/.local/share"}"
+    GROLES_DATA_HOME="${GROLES_DATA_HOME:-"${XDG_DATA_HOME}/groles"}"
+    mkdir -p "${GROLES_DATA_HOME}"
+    ROLES_JSON="${GROLES_DATA_HOME}/roles.json"
     GROLES_REPO="${GROLES_REPO:-"pcrock-thmdo/flyscrape-test"}"
 }
 
@@ -112,7 +112,7 @@ needs_update() {
 
 main() {
     init
-    if needs_update "${@}"; then
+    if needs_update "$@"; then
         update_roles_json
     fi
     local role_heading
@@ -123,4 +123,4 @@ main() {
           --decorations never
 }
 
-main "${@}"
+main "$@"
