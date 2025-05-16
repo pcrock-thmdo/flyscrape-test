@@ -1,17 +1,45 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-INPUT_FILE=roles.json
-
 init() {
-    BAT_THEME="${BAT_THEME:-ansi}"
-    export BAT_THEME
+    export BAT_THEME="${BAT_THEME:-ansi}"
+    export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"${HOME}/.config"}"
+    GROLES_CONFIG_HOME="${GROLES_CONFIG_HOME:-"${XDG_CONFIG_HOME}/groles"}"
+    mkdir -p "${GROLES_CONFIG_HOME}"
+    ROLES_JSON="${GROLES_CONFIG_HOME}/roles.json"
+    GROLES_REPO="${GROLES_REPO:-"pcrock-thmdo/flyscrape-test"}"
+}
+
+curl_download() {
+    local url="${1}"
+    curl \
+        --proto '=https' \
+        --tlsv1.2 \
+        --silent \
+        --show-error \
+        --fail \
+        --location "${url}"
+}
+
+github_latest_tag() {
+    local repo="${1}"
+    curl_download "https://api.github.com/repos/${repo}/releases/latest" \
+        | grep --perl-regexp --only-matching '(?<="tag_name":)\s*"\S+"' \
+        | tr --delete '" '
+}
+
+update_roles_json() {
+    echo "Updating roles data..." >&2
+    local latest_tag
+    latest_tag="$(github_latest_tag "${GROLES_REPO}")"
+    curl_download "https://github.com/${GROLES_REPO}/releases/download/${latest_tag}/roles.json" \
+        > "${ROLES_JSON}"
 }
 
 get_roles() {
     # shellcheck shell=sh
     # the source of this function will be used inside fzf, executed by `sh` as well as `bash`
-    jq '.[0].data.roles' < "${INPUT_FILE}"
+    jq '.[0].data.roles' < "${ROLES_JSON}"
 }
 
 get_headings() {
@@ -51,7 +79,7 @@ EOF
 select_role() {
     local preview_cmd
     preview_cmd="
-INPUT_FILE=${INPUT_FILE}
+ROLES_JSON=${ROLES_JSON}
 $(declare -f get_roles)
 $(declare -f get_details)
 get_roles \
@@ -80,6 +108,7 @@ fzf_ui() {
 
 main() {
     init
+    test -f "${ROLES_JSON}" || update_roles_json
     local role_heading
     role_heading="$(select_role)"
     get_roles | get_details "${role_heading}" \
