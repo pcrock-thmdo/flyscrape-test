@@ -4,6 +4,16 @@ Search and browse GCP roles in your terminal. Because Google's [IAM basic and pr
 roles reference](https://cloud.google.com/iam/docs/understanding-roles) is one of the
 more painful websites to use on the web.
 
+---
+
+**UPDATE:** Literally _as I was actively working on making this releasable as a useful
+project_, Google went and did a good (frustrating?) thing: **They made their permissions
+and roles references not suck anymore!** Well I guess this project is obsolete now.
+
+Check it out for yourself: <https://cloud.google.com/iam/docs/roles-permissions>
+
+---
+
 ![Screenshot](./screenshot.png)
 
 ## Installation
