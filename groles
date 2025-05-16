@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
-set -Eeuo pipefail
+#
+# `groles`: search and browse GCP roles in your terminal
+#
+# Dependencies:
+#
+# * fzf <https://github.com/junegunn/fzf>
+# * bat <https://github.com/sharkdp/bat>
+# * jq <https://jqlang.org/>
+# * curl <https://curl.se/>
+#
+# Usage: groles [update]
+#
+set -euo pipefail
 
 init() {
     export BAT_THEME="${BAT_THEME:-ansi}"
@@ -78,6 +90,13 @@ EOF
 }
 
 select_role() {
+    get_headings | fzf_ui
+}
+
+fzf_ui() {
+    # expects output of `get_headings` to be piped as stdin
+    # returns the user's selected role heading via stdout
+
     local preview_cmd
     preview_cmd="
 ROLES_JSON=${ROLES_JSON}
@@ -93,12 +112,6 @@ get_roles \
   --terminal-width \"\$((FZF_PREVIEW_COLUMNS-2))\"
 "
 
-    get_headings | fzf_ui
-}
-
-fzf_ui() {
-    # expects output of `get_headings` to be piped as stdin
-    # returns the user's selected role heading via stdout
     SHELL="sh" \
     fzf --ansi \
         --preview "${preview_cmd}" \
@@ -118,7 +131,8 @@ main() {
     fi
     local role_heading
     role_heading="$(select_role)"
-    get_roles | get_details "${role_heading}" \
+    get_roles \
+        | get_details "${role_heading}" \
         | bat --language markdown \
           --wrap character \
           --decorations never
