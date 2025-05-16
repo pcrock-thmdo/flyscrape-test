@@ -9,17 +9,22 @@
 # * jq <https://jqlang.org/>
 # * curl <https://curl.se/>
 #
-# Usage: groles [update]
-#
 set -euo pipefail
 
 init() {
+    GROLES_VERSION="0.1.2"
     export BAT_THEME="${BAT_THEME:-ansi}"
     export XDG_DATA_HOME="${XDG_DATA_HOME:-"${HOME}/.local/share"}"
     GROLES_DATA_HOME="${GROLES_DATA_HOME:-"${XDG_DATA_HOME}/groles"}"
     mkdir -p "${GROLES_DATA_HOME}"
     ROLES_JSON="${GROLES_DATA_HOME}/roles.json"
     GROLES_REPO="${GROLES_REPO:-"pcrock-thmdo/flyscrape-test"}"
+}
+
+help() {
+    cat <<EOF
+Usage: groles [--update|--version|--help]
+EOF
 }
 
 curl_download() {
@@ -120,15 +125,34 @@ get_roles \
         --prompt "Role: "
 }
 
-needs_update() {
-    test ! -f "${ROLES_JSON}" || [ "${1:-}" == "update" ]
-}
-
 main() {
     init
-    if needs_update "$@"; then
-        update_roles_json
-    fi
+
+    case "${1:-}" in
+        --update|-u)
+            update_roles_json
+            exit 0
+        ;;
+        --version|-v)
+            echo "${GROLES_VERSION}"
+            exit 0
+        ;;
+        --help|-h)
+            help
+            exit 0
+        ;;
+        "")
+            # carry on sir
+        ;;
+        *)
+            echo "Unrecognized argument: ${1}"
+            help
+            exit 1
+        ;;
+    esac
+
+    test -f "${ROLES_JSON}" || update_roles_json
+
     local role_heading
     role_heading="$(select_role)"
     get_roles \
