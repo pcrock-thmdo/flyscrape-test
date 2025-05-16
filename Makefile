@@ -16,10 +16,7 @@ ci:
 .PHONY: ci
 
 release:
-	gh release create \
-		--generate-notes \
-		--fail-on-no-commits \
-		--target "$(shell git rev-parse --abbrev-ref HEAD)"
+	./bin/release.sh
 .PHONY: release
 
 upload-artifacts: roles.json.gz
