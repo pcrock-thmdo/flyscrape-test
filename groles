@@ -3,6 +3,11 @@ set -Eeuo pipefail
 
 INPUT_FILE=roles.json
 
+init() {
+    BAT_THEME="${BAT_THEME:-ansi}"
+    export BAT_THEME
+}
+
 get_roles() {
     # shellcheck shell=sh
     # the source of this function will be used inside fzf, executed by `sh` as well as `bash`
@@ -51,16 +56,36 @@ $(declare -f get_roles)
 $(declare -f get_details)
 get_roles \
 | get_details {} \
-| glow --width \"\$((FZF_PREVIEW_COLUMNS-2))\"
+| bat --language markdown \
+  --wrap character \
+  --decorations never \
+  --color always \
+  --paging never \
+  --terminal-width \"\$((FZF_PREVIEW_COLUMNS-2))\"
 "
 
-    get_headings | SHELL="sh" fzf --ansi --preview "${preview_cmd}" --preview-window up,75% --layout reverse
+    get_headings | fzf_ui
+}
+
+fzf_ui() {
+    # expects output of `get_headings` to be piped as stdin
+    # returns the user's selected role heading via stdout
+    SHELL="sh" \
+    fzf --ansi \
+        --preview "${preview_cmd}" \
+        --preview-window up,75% \
+        --layout reverse \
+        --prompt "Role: "
 }
 
 main() {
+    init
     local role_heading
     role_heading="$(select_role)"
-    get_roles | get_details "${role_heading}"
+    get_roles | get_details "${role_heading}" \
+        | bat --language markdown \
+          --wrap character \
+          --decorations never
 }
 
 main
