@@ -1,7 +1,7 @@
 CONTAINER ?= groles-ci
 
-run: roles.json
-.PHONY: run
+scrape: roles.json
+.PHONY: scrape
 
 lint:
 	shellcheck groles
@@ -10,7 +10,7 @@ lint:
 ci:
 	docker container rm --force "$(CONTAINER)" &>/dev/null || true
 	docker build --tag "$(CONTAINER)" .
-	docker run --name "$(CONTAINER)" "$(CONTAINER)" make lint run
+	docker run --name "$(CONTAINER)" "$(CONTAINER)" make lint scrape
 	docker cp "$(CONTAINER)":/app/roles.json .
 	docker container rm --force "$(CONTAINER)"
 .PHONY: ci
@@ -24,8 +24,8 @@ upload-artifacts: roles.json.gz
 		groles roles.json.gz
 .PHONY: upload-artifacts
 
-roles.json: understanding-roles.js
-	flyscrape run ./understanding-roles.js > roles.json
+roles.json:
+	flyscrape run ./scrape.js > roles.json
 
 roles.json.gz: roles.json
 	gzip --keep roles.json

@@ -18,7 +18,7 @@ init() {
     GROLES_DATA_HOME="${GROLES_DATA_HOME:-"${XDG_DATA_HOME}/groles"}"
     mkdir -p "${GROLES_DATA_HOME}"
     ROLES_JSON="${GROLES_DATA_HOME}/roles.json"
-    GROLES_REPO="${GROLES_REPO:-"pcrock-thmdo/flyscrape-test"}"
+    GROLES_REPO="${GROLES_REPO:-"pcrock-thmdo/groles"}"
 }
 
 help() {

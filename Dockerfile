@@ -18,4 +18,4 @@ ENV PATH="/home/user/.local/bin:${PATH}"
 
 RUN curl -SsfL https://philcrockett.com/yolo/v1.sh \
     | bash -s -- flyscrape
-COPY Makefile understanding-roles.js groles .
+COPY Makefile scrape.js groles .

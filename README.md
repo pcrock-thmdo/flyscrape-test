@@ -18,7 +18,7 @@ _For now, only Linux is supported. macOS compatibility PRs welcome!_
 * curl <https://curl.se/>
 
 If you have these tools installed, just download `groles` from the [latest
-release](https://github.com/pcrock-thmdo/flyscrape-test/releases/tag/v0.1.1) and run:
+release](https://github.com/pcrock-thmdo/groles/releases/latest) and run:
 
 ```bash
 chmod +x ./groles
