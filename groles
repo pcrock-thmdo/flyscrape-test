@@ -106,9 +106,15 @@ fzf_ui() {
         --prompt "Role: "
 }
 
+needs_update() {
+    test ! -f "${ROLES_JSON}" || [ "${1:-}" == "update" ]
+}
+
 main() {
     init
-    test -f "${ROLES_JSON}" || update_roles_json
+    if needs_update "${@}"; then
+        update_roles_json
+    fi
     local role_heading
     role_heading="$(select_role)"
     get_roles | get_details "${role_heading}" \
@@ -117,4 +123,4 @@ main() {
           --decorations never
 }
 
-main
+main "${@}"
